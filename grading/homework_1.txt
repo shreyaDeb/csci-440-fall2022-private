@@ -29,17 +29,11 @@
 Resetting DB After Test...
 Resetting DB After Test...
 Resetting DB After Test...
-[ERROR] Tests run: 3, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.368 s <<< FAILURE! - in edu.montana.csci.csci440.homework.Homework1
-[ERROR] selectTheTrackAndAlbumAndArtistForAllTracksLongerThanSixMinutes  Time elapsed: 0.006 s  <<< ERROR!
-java.lang.RuntimeException: org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing database (no such column: albums.Title)
-	at edu.montana.csci.csci440.homework.Homework1.selectTheTrackAndAlbumAndArtistForAllTracksLongerThanSixMinutes(Homework1.java:39)
-Caused by: org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing database (no such column: albums.Title)
-	at edu.montana.csci.csci440.homework.Homework1.selectTheTrackAndAlbumAndArtistForAllTracksLongerThanSixMinutes(Homework1.java:39)
-
-[ERROR] selectAllArtistsWithMoreThanOneAlbum  Time elapsed: 0.002 s  <<< ERROR!
-java.lang.RuntimeException: org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing database (no such column: albumTitle)
+[ERROR] Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.414 s <<< FAILURE! - in edu.montana.csci.csci440.homework.Homework1
+[ERROR] selectAllArtistsWithMoreThanOneAlbum  Time elapsed: 0.013 s  <<< ERROR!
+java.lang.RuntimeException: org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing database (near "COUNT": syntax error)
 	at edu.montana.csci.csci440.homework.Homework1.selectAllArtistsWithMoreThanOneAlbum(Homework1.java:26)
-Caused by: org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing database (no such column: albumTitle)
+Caused by: org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing database (near "COUNT": syntax error)
 	at edu.montana.csci.csci440.homework.Homework1.selectAllArtistsWithMoreThanOneAlbum(Homework1.java:26)
 
 [INFO] 
@@ -47,15 +41,14 @@ Caused by: org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing datab
 [INFO] 
 [ERROR] Errors: 
 [ERROR]   Homework1.selectAllArtistsWithMoreThanOneAlbum:26->DBTest.executeSQL:58 » Runtime
-[ERROR]   Homework1.selectTheTrackAndAlbumAndArtistForAllTracksLongerThanSixMinutes:39->DBTest.executeSQL:58 » Runtime
 [INFO] 
-[ERROR] Tests run: 3, Failures: 0, Errors: 2, Skipped: 0
+[ERROR] Tests run: 3, Failures: 0, Errors: 1, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD FAILURE
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  1.923 s
-[INFO] Finished at: 2022-09-30T10:24:38-06:00
+[INFO] Total time:  2.141 s
+[INFO] Finished at: 2022-09-30T11:58:48-06:00
 [INFO] ------------------------------------------------------------------------
 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.1:test (default-test) on project CSCI_440_Project: There are test failures.
 [ERROR] 
