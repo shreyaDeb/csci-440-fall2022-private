@@ -29,35 +29,15 @@
 Resetting DB After Test...
 Resetting DB After Test...
 Resetting DB After Test...
-[ERROR] Tests run: 3, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.414 s <<< FAILURE! - in edu.montana.csci.csci440.homework.Homework1
-[ERROR] selectAllArtistsWithMoreThanOneAlbum  Time elapsed: 0.013 s  <<< ERROR!
-java.lang.RuntimeException: org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing database (near "COUNT": syntax error)
-	at edu.montana.csci.csci440.homework.Homework1.selectAllArtistsWithMoreThanOneAlbum(Homework1.java:26)
-Caused by: org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing database (near "COUNT": syntax error)
-	at edu.montana.csci.csci440.homework.Homework1.selectAllArtistsWithMoreThanOneAlbum(Homework1.java:26)
-
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.283 s - in edu.montana.csci.csci440.homework.Homework1
 [INFO] 
 [INFO] Results:
 [INFO] 
-[ERROR] Errors: 
-[ERROR]   Homework1.selectAllArtistsWithMoreThanOneAlbum:26->DBTest.executeSQL:58 » Runtime
-[INFO] 
-[ERROR] Tests run: 3, Failures: 0, Errors: 1, Skipped: 0
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 [INFO] 
 [INFO] ------------------------------------------------------------------------
-[INFO] BUILD FAILURE
+[INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  2.141 s
-[INFO] Finished at: 2022-09-30T11:58:48-06:00
+[INFO] Total time:  1.776 s
+[INFO] Finished at: 2022-09-30T13:25:18-06:00
 [INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.1:test (default-test) on project CSCI_440_Project: There are test failures.
-[ERROR] 
-[ERROR] Please refer to /Users/carson/Projects/msu/demo/csci-440-fall2022-private/grading/scripts/repos/shreya_deb/target/surefire-reports for the individual test results.
-[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
-[ERROR] -> [Help 1]
-[ERROR] 
-[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
-[ERROR] Re-run Maven using the -X switch to enable full debug logging.
-[ERROR] 
-[ERROR] For more information about the errors and possible solutions, please read the following articles:
-[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
