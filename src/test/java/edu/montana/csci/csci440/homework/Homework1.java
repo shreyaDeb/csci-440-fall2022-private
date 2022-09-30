@@ -24,7 +24,7 @@ public class Homework1 extends DBTest {
      */
     void selectAllArtistsWithMoreThanOneAlbum(){
         List<Map<String, Object>> results = executeSQL(
-                "SELECT * FROM artists WHERE albumTitle  ");
+                "SELECT * FROM artists WHERE albums COUNT(*) > 1 ");
 
         assertEquals(56, results.size());
         assertEquals("AC/DC", results.get(0).get("Name"));
@@ -37,8 +37,10 @@ public class Homework1 extends DBTest {
          */
     void selectTheTrackAndAlbumAndArtistForAllTracksLongerThanSixMinutes() {
         List<Map<String, Object>> results = executeSQL(
-                "SELECT tracks.Name as TrackName, albums.Title as AlbumTitle, artists.Name as ArtistsName FROM tracks WHERE Millisecond > 6*60*10000" +
-                        "" );
+                "SELECT tracks.Name as TrackName, albums.Title as AlbumTitle, artists.Name as ArtistsName FROM tracks\n" +
+                        "JOIN albums ON tracks.AlbumId = albums.AlbumId\n" +
+                        "JOIN artists ON albums.ArtistID = artists.ArtistId\n" +
+                        "WHERE tracks.milliseconds > 360000");
 
         assertEquals(623, results.size());
 
