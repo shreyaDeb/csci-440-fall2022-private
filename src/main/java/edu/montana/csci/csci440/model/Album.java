@@ -57,6 +57,56 @@ public class Album extends Model {
         return artistId;
     }
 
+    @Override
+    public boolean verify(){
+        _errors.clear(); // clear any existing errors
+        if (title == null || "".equals(title)) {
+            addError("title can't be null or blank!");
+        }
+        if (artistId == null || "".equals(artistId)) {
+            addError("artistId can't be null!");
+        }
+        return !hasErrors();
+    }
+
+    @Override
+    public boolean create() {
+        if (verify()) {
+            try (Connection conn = DB.connect();
+                 PreparedStatement stmt = conn.prepareStatement(
+                         "INSERT INTO albums (Title, ArtistId) VALUES (?, ?)")) {
+                stmt.setString(1, getTitle());
+                stmt.setLong(2, getArtistId());
+                stmt.executeUpdate();
+                albumId = DB.getLastID(conn);
+                return true;
+            } catch (SQLException sqlException) {
+                throw new RuntimeException(sqlException);
+            }
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean update() {
+        if (verify()) {
+            try (Connection conn = DB.connect();
+                 PreparedStatement stmt = conn.prepareStatement(
+                         "UPDATE albums SET title=?, artistId=? WHERE albumId=?")) {
+                stmt.setString(1, this.getTitle());
+                stmt.setLong(2, this.getArtistId());
+                stmt.setLong(3, this.getAlbumId());
+                stmt.executeUpdate();
+                return true;
+            } catch (SQLException sqlException) {
+                throw new RuntimeException(sqlException);
+            }
+        } else {
+            return false;
+        }
+    }
+
     public static List<Album> all() {
         return all(0, Integer.MAX_VALUE);
     }
@@ -64,9 +114,12 @@ public class Album extends Model {
     public static List<Album> all(int page, int count) {
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT * FROM albums LIMIT ?"
+                     "SELECT * FROM albums LIMIT ? OFFSET ?"
              )) {
+
+            int offsetNum = (page - 1) * count;
             stmt.setInt(1, count);
+            stmt.setInt(2,offsetNum);
             ResultSet results = stmt.executeQuery();
             List<Album> resultList = new LinkedList<>();
             while (results.next()) {

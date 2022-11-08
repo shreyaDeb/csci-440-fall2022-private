@@ -60,5 +60,4 @@ public class AlbumTest extends DBTest {
         album.update();
         assertEquals(newTitle, Album.find(1).getTitle());
     }
-
 }

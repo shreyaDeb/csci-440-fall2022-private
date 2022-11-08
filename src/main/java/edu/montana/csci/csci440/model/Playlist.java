@@ -48,8 +48,12 @@ public class Playlist extends Model {
     public static List<Playlist> all(int page, int count) {
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT * FROM playlists"
+                     "SELECT * FROM playlists LIMIT ? OFFSET ?"
              )) {
+
+            int offsetNum = (page - 1) * count;
+            stmt.setInt(1, count);
+            stmt.setInt(2,offsetNum);
             ResultSet results = stmt.executeQuery();
             List<Playlist> resultList = new LinkedList<>();
             while (results.next()) {

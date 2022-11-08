@@ -73,9 +73,9 @@ public class Employee extends Model {
             try (Connection conn = DB.connect();
                  PreparedStatement stmt = conn.prepareStatement(
                          "INSERT INTO employees (FirstName, LastName, Email) VALUES (?, ?, ?)")) {
-                stmt.setString(1, this.getFirstName());
-                stmt.setString(2, this.getLastName());
-                stmt.setString(3, this.getEmail());
+                stmt.setString(1, getFirstName());
+                stmt.setString(2, getLastName());
+                stmt.setString(3, getEmail());
                 stmt.executeUpdate();
                 employeeId = DB.getLastID(conn);
                 return true;
@@ -162,9 +162,12 @@ public class Employee extends Model {
     public static List<Employee> all(int page, int count) {
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT * FROM employees LIMIT ?"
+                     "SELECT * FROM employees LIMIT ? OFFSET ?"
              )) {
+
+            int offsetNum = (page - 1) * count;
             stmt.setInt(1, count);
+            stmt.setInt(2,offsetNum);
             ResultSet results = stmt.executeQuery();
             List<Employee> resultList = new LinkedList<>();
             while (results.next()) {

@@ -26,6 +26,8 @@ public class Track extends Model {
     private Long bytes;
     private BigDecimal unitPrice;
 
+    private String composer;
+
     public static final String REDIS_CACHE_KEY = "cs440-tracks-count-cache";
 
     public Track() {
@@ -45,7 +47,57 @@ public class Track extends Model {
         albumId = results.getLong("AlbumId");
         mediaTypeId = results.getLong("MediaTypeId");
         genreId = results.getLong("GenreId");
+        composer = results.getString("Composer");
     }
+
+    @Override
+    public boolean verify(){
+        return true;
+    }
+
+    @Override
+    public boolean create() {
+        if (verify()) {
+            try (Connection conn = DB.connect();
+                 PreparedStatement stmt = conn.prepareStatement(
+                         "INSERT INTO tracks (Name, Milliseconds, Bytes, UnitPrice, AlbumId, MediaTypeId, GenreId, Composer) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
+                stmt.setString(1, getName());
+                stmt.setLong(2, getMilliseconds());
+                stmt.setLong(3, getBytes());
+                stmt.setBigDecimal(4, getUnitPrice());
+                stmt.setLong(5, getTrackId());
+                stmt.setLong(6, getAlbumId());
+                stmt.setLong(7, getGenreId());
+                stmt.setString(8, getComposer());
+                stmt.executeUpdate();
+                trackId = DB.getLastID(conn);
+                return true;
+            } catch (SQLException sqlException) {
+                throw new RuntimeException(sqlException);
+            }
+        } else {
+            return false;
+        }
+    }
+
+   /* @Override
+    public boolean update() {
+        if (verify()) {
+            try (Connection conn = DB.connect();
+                 PreparedStatement stmt = conn.prepareStatement(
+                         "UPDATE albums SET title=?, artistId=? WHERE albumId=?")) {
+                stmt.setString(1, this.getTitle());
+                stmt.setLong(2, this.getArtistId());
+                stmt.setLong(3, this.getAlbumId());
+                stmt.executeUpdate();
+                return true;
+            } catch (SQLException sqlException) {
+                throw new RuntimeException(sqlException);
+            }
+        } else {
+            return false;
+        }
+    }*/
 
     public static Track find(long i) {
         try (Connection conn = DB.connect();
@@ -159,6 +211,13 @@ public class Track extends Model {
         this.genreId = genreId;
     }
 
+    public String getComposer() {
+        return composer;
+    }
+
+    public void setComposer(String composer){
+        this.composer = composer;
+    }
     public String getArtistName() {
         // TODO implement more efficiently
         //  hint: cache on this model object
