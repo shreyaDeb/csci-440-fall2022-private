@@ -3,7 +3,9 @@ package edu.montana.csci.csci440.homework;
 import edu.montana.csci.csci440.DBTest;
 import edu.montana.csci.csci440.model.Track;
 import edu.montana.csci.csci440.util.DB;
+import org.eclipse.jetty.client.api.Request;
 import org.junit.jupiter.api.Test;
+import org.sqlite.SQLiteCommitListener;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,18 +33,20 @@ public class Homework3 extends DBTest {
         Track track2 = Track.find(2);
         Long track2InitialTime = track2.getMilliseconds();
 
-        try(Connection connection = DB.connect()){
+        try (Connection connection = DB.connect()) {
             connection.setAutoCommit(false);
-            PreparedStatement subtract = connection.prepareStatement("TODO");
-            subtract.setLong(1, 0);
-            subtract.setLong(2, 0);
+            PreparedStatement subtract = connection.prepareStatement("UPDATE tracks SET Milliseconds= Milliseconds-? WHERE TrackId=?");
+            subtract.setLong(1, 10);
+            subtract.setLong(2, 1);
             subtract.execute();
 
-            PreparedStatement add = connection.prepareStatement("TODO");
-            add.setLong(1, 0);
-            add.setLong(2, 0);
+            PreparedStatement add = connection.prepareStatement("UPDATE tracks SET Milliseconds= Milliseconds+? WHERE TrackId=?");
+            add.setLong(1, 10);
+            add.setLong(2, 2);
             add.execute();
 
+
+            connection.commit();
             // commit with the connection
         }
 
@@ -66,12 +70,21 @@ public class Homework3 extends DBTest {
     public void selectPopularTracksAndTheirAlbums() throws SQLException {
 
         // HINT: join to invoice items and do a group by/having to get the right answer
-        List<Map<String, Object>> tracks = executeSQL("");
+        List<Map<String, Object>> tracks = executeSQL("SELECT *\n" +
+                "FROM tracks\n" +
+                "JOIN invoice_items ii ON tracks.TrackId = ii.TrackId\n" +
+                "GROUP BY ii.TrackId\n" +
+                "HAVING COUNT (InvoiceId) > 1;");
         assertEquals(256, tracks.size());
 
         // HINT: join to tracks and invoice items and do a group by/having to get the right answer
         //       note: you will need to use the DISTINCT operator to get the right result!
-        List<Map<String, Object>> albums = executeSQL("");
+        List<Map<String, Object>> albums = executeSQL("SELECT DISTINCT Title\n" +
+                "FROM albums\n" +
+                "JOIN tracks t on albums.AlbumId = t.AlbumId\n" +
+                "JOIN invoice_items ii ON t.TrackId = ii.TrackId\n" +
+                "GROUP BY ii.TrackId\n" +
+                "HAVING COUNT (InvoiceId) > 1;");
         assertEquals(166, albums.size());
     }
 
@@ -84,9 +97,10 @@ public class Homework3 extends DBTest {
      * */
     public void selectCustomersMeetingCriteria() throws SQLException {
         // HINT: join to invoice items and do a group by/having to get the right answer
-        List<Map<String, Object>> tracks = executeSQL("" );
+        List<Map<String, Object>> tracks = executeSQL("SELECT Email FROM customers WHERE SupportRepId IN \n" +
+                "(SELECT invoice_items.TrackId FROM invoice_items JOIN tracks t on invoice_items.TrackId = t.TrackId\n" +
+                "GROUP BY invoice_items.TrackId\n" +
+                "HAVING customers.SupportRepId = 3);");
         assertEquals(21, tracks.size());
     }
-
-
 }
