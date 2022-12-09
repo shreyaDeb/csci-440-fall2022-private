@@ -257,12 +257,6 @@ public class Track extends Model {
     public static List<Track> advancedSearch(int page, int count,
                                              String search, Integer artistId, Integer albumId,
                                              Integer maxRuntime, Integer minRuntime) {
-        if(minRuntime != null){
-            minRuntime = minRuntime * 1000;
-        }
-        if(maxRuntime != null){
-            maxRuntime = maxRuntime * 1000;
-        }
         LinkedList<Object> args = new LinkedList<>();
         String query = "SELECT *, artists.Name AS ArtistName, albums.Title AS AlbumTitle " +
                 "FROM tracks " +
@@ -283,12 +277,12 @@ public class Track extends Model {
         }
 
         if (maxRuntime != null) {
-            query += " AND milliseconds < ? ";
+            query += " AND Milliseconds < ? ";
             args.add(maxRuntime);
         }
 
         if (minRuntime != null) {
-            query += " AND milliseconds > ? ";
+            query += " AND Milliseconds > ? ";
             args.add(minRuntime);
         }
 
