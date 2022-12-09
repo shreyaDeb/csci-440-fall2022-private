@@ -15,6 +15,7 @@ public class Artist extends Model {
 
     Long artistId;
     String name;
+    String original_name = null;
 
     public Artist() {
     }
@@ -41,6 +42,9 @@ public class Artist extends Model {
     }
 
     public void setName(String name) {
+        if(this.original_name == null){
+            this.original_name = this.name;
+        }
         this.name = name;
     }
 
@@ -49,10 +53,10 @@ public class Artist extends Model {
     }
 
     @Override
-    public boolean verify(){
+    public boolean verify() {
         _errors.clear(); // clear any existing errors
         if (name == null || "".equals(name)) {
-            addError("name can't be null or blank!");
+            addError("Name can't be null or blank!");
         }
         return !hasErrors();
     }
@@ -74,16 +78,24 @@ public class Artist extends Model {
             return false;
         }
     }
+
     @Override
     public boolean update() {
         if (verify()) {
             try (Connection conn = DB.connect();
                  PreparedStatement stmt = conn.prepareStatement(
-                         "UPDATE artists SET name=? WHERE artistId=?")) {
+                         "UPDATE artists SET Name=? WHERE ArtistId=? AND Name=?")) {
                 stmt.setString(1, this.getName());
                 stmt.setLong(2, this.getArtistId());
-                stmt.executeUpdate();
-                return true;
+                stmt.setString(3, this.original_name);
+                int result = stmt.executeUpdate();
+                if(result == 0){
+                    return false;
+                }
+                else{
+                    original_name = null;
+                    return true;
+                }
             } catch (SQLException sqlException) {
                 throw new RuntimeException(sqlException);
             }
@@ -92,16 +104,14 @@ public class Artist extends Model {
         }
     }
 
-
     public static List<Artist> all(int page, int count) {
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(
                      "SELECT * FROM artists LIMIT ? OFFSET ?"
              )) {
-
             int offsetNum = (page - 1) * count;
             stmt.setInt(1, count);
-            stmt.setInt(2,offsetNum);
+            stmt.setInt(2, offsetNum);
             ResultSet results = stmt.executeQuery();
             List<Artist> resultList = new LinkedList<>();
             while (results.next()) {

@@ -38,7 +38,7 @@ public class Track extends Model {
         unitPrice = new BigDecimal("0");
     }
 
-    private Track(ResultSet results) throws SQLException {
+    Track(ResultSet results) throws SQLException {
         name = results.getString("Name");
         milliseconds = results.getLong("Milliseconds");
         bytes = results.getLong("Bytes");
@@ -47,12 +47,20 @@ public class Track extends Model {
         albumId = results.getLong("AlbumId");
         mediaTypeId = results.getLong("MediaTypeId");
         genreId = results.getLong("GenreId");
-        composer = results.getString("Composer");
+        //artistName = results.getString("ArtistName");
+        //albumTitle = results.getString("AlbumTitle");
     }
 
     @Override
     public boolean verify(){
-        return true;
+        _errors.clear(); // clear any existing errors
+        if (name == null || "".equals(name)) {
+            addError("title can't be null or blank!");
+        }
+        if (albumId == null || "".equals(albumId)) {
+            addError("artistId can't be null!");
+        }
+        return !hasErrors();
     }
 
     @Override
@@ -60,15 +68,16 @@ public class Track extends Model {
         if (verify()) {
             try (Connection conn = DB.connect();
                  PreparedStatement stmt = conn.prepareStatement(
-                         "INSERT INTO tracks (Name, Milliseconds, Bytes, UnitPrice, AlbumId, MediaTypeId, GenreId, Composer) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")) {
+                         "INSERT INTO tracks (Name, AlbumId, Milliseconds, Bytes, UnitPrice, TrackId, MediaTypeId, GenreId, Composer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 stmt.setString(1, getName());
-                stmt.setLong(2, getMilliseconds());
-                stmt.setLong(3, getBytes());
-                stmt.setBigDecimal(4, getUnitPrice());
-                stmt.setLong(5, getTrackId());
-                stmt.setLong(6, getAlbumId());
-                stmt.setLong(7, getGenreId());
-                stmt.setString(8, getComposer());
+                stmt.setLong(2, getAlbumId());
+                stmt.setLong(3,getMilliseconds());
+                stmt.setLong(4,getBytes());
+                stmt.setBigDecimal(5,getUnitPrice());
+                stmt.setLong(6,getTrackId());
+                stmt.setLong(7,getMediaTypeId());
+                stmt.setLong(8,getGenreId());
+                stmt.setString(9,getComposer());
                 stmt.executeUpdate();
                 trackId = DB.getLastID(conn);
                 return true;
@@ -79,25 +88,6 @@ public class Track extends Model {
             return false;
         }
     }
-
-   /* @Override
-    public boolean update() {
-        if (verify()) {
-            try (Connection conn = DB.connect();
-                 PreparedStatement stmt = conn.prepareStatement(
-                         "UPDATE albums SET title=?, artistId=? WHERE albumId=?")) {
-                stmt.setString(1, this.getTitle());
-                stmt.setLong(2, this.getArtistId());
-                stmt.setLong(3, this.getAlbumId());
-                stmt.executeUpdate();
-                return true;
-            } catch (SQLException sqlException) {
-                throw new RuntimeException(sqlException);
-            }
-        } else {
-            return false;
-        }
-    }*/
 
     public static Track find(long i) {
         try (Connection conn = DB.connect();
@@ -313,9 +303,11 @@ public class Track extends Model {
     public static List<Track> all(int page, int count, String orderBy) {
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT * FROM tracks LIMIT ?"
+                     "SELECT * FROM tracks LIMIT ? OFFSET ?"
              )) {
+            int offsetNum = (page - 1) * count;
             stmt.setInt(1, count);
+            stmt.setInt(2, offsetNum);
             ResultSet results = stmt.executeQuery();
             List<Track> resultList = new LinkedList<>();
             while (results.next()) {
