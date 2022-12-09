@@ -103,7 +103,6 @@ public class Artist extends Model {
             return false;
         }
     }
-
     public static List<Artist> all(int page, int count) {
         try (Connection conn = DB.connect();
              PreparedStatement stmt = conn.prepareStatement(

@@ -32,16 +32,16 @@ public class Employee extends Model {
 
     public static List<Employee.SalesSummary> getSalesSummaries() {
         try (Connection conn = DB.connect();
-             PreparedStatement stmt = conn.prepareStatement("SELECT employees.FirstName, employees.LastName, employees.Email, COUNT(invoices.Total)\n" +
-                     "    AS SalesCount, SUM(invoices.Total) AS SalesTotal\n" +
+             PreparedStatement stmt = conn.prepareStatement("SELECT employees.FirstName, employees.LastName, employees.Email, COUNT(i.Total)\n" +
+                     "AS SalesCount, SUM(i.Total) AS SalesTotal\n" +
                      "FROM employees\n" +
-                     "    JOIN customers c ON employees.EmployeeId = c.SupportRepId\n" +
-                     "    JOIN invoices i ON c.CustomerId = i.CustomerId\n" +
-                     "GROUP BY employees.Email\n")) {
+                     "JOIN customers c ON employees.EmployeeId = c.SupportRepId\n" +
+                     "JOIN invoices i ON c.CustomerId = i.CustomerId\n" +
+                     "GROUP BY employees.Email")) {
             ResultSet results = stmt.executeQuery();
             List<Employee.SalesSummary> resultList = new LinkedList<>();
             while (results.next()) {
-                resultList.add(new SalesSummary(results));
+                resultList.add(new Employee.SalesSummary(results));
             }
             return resultList;
         } catch (SQLException sqlException) {
@@ -168,8 +168,7 @@ public class Employee extends Model {
         }
     }
     public Employee getBoss() {
-        Long bossId = this.reportsTo;
-        return find(bossId);
+        return find(this.reportsTo);
     }
 
     public static List<Employee> all() {
